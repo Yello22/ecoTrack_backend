@@ -26,8 +26,6 @@ import ApiBaseResponses from '@decorators/api-base-response.decorator';
 import ApiOkBaseResponse from '@decorators/api-ok-base-response.decorator';
 import { AccessGuard, Actions, UseAbility } from '@modules/casl';
 import Serialize from '@decorators/serialize.decorator';
-import { OrderByPipe, WherePipe } from '@nodeteam/nestjs-pipes';
-import { Prisma, User } from '@prisma/client';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
 import { PrismaQueryBuilderPipe } from '@decorators/prismaQueryBuilder.decorator';
 

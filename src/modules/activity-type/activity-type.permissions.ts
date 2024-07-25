@@ -7,7 +7,11 @@ import { Roles } from '@prisma/client';
 export type Subjects = InferSubjects<typeof ActivityTypeEntity>;
 
 export const permissions: Permissions<Roles, Subjects, Actions> = {
-  everyone({ can }) {
-    can(Actions.read, ActivityTypeEntity, ['carbonFactor', 'name']);
+  everyone({ can, cannot }) {
+    can(Actions.read, ActivityTypeEntity);
+    cannot(
+      [Actions.create, Actions.delete, Actions.update],
+      ActivityTypeEntity,
+    );
   },
 };
