@@ -15,6 +15,7 @@ import { AuthGuard } from '@modules/auth/auth.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TokenService } from '@modules/auth/token.service';
 import { TokenRepository } from '@modules/auth/token.repository';
+import { ActivityModule } from '@modules/activity/activity.module';
 
 @Module({
   controllers: [],
@@ -36,6 +37,7 @@ import { TokenRepository } from '@modules/auth/token.repository';
       // Role to grant full access, optional
       superuserRole: Roles.admin,
     }),
+    ActivityModule,
     HealthModule,
     UserModule,
     AuthModule,
