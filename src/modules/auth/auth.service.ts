@@ -37,7 +37,6 @@ export class AuthService {
       // 409001: User with this email or phone already exists
       throw new ConflictException(USER_CONFLICT);
     }
-
     return this.userRepository.create(signUpDto);
   }
 
@@ -69,7 +68,7 @@ export class AuthService {
     if (
       !(await this.tokenService.isPasswordCorrect(
         signInDto.password,
-        testUser.password,
+        testUser.password, 
       ))
     ) {
       // 401001: Invalid credentials

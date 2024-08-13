@@ -11,6 +11,14 @@ export class TokenRepository {
   ) {}
 
   getAccessTokenFromWhitelist(accessToken: string): Promise<TokenWhiteList> {
+    this.prisma.tokenWhiteList
+      .findFirst({
+        where: {
+          accessToken,
+        },
+      })
+      .then((result) => console.log(result));
+
     return this.prisma.tokenWhiteList.findFirst({
       where: {
         accessToken,
