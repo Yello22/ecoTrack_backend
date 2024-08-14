@@ -15,7 +15,7 @@ export const permissions: Permissions<Roles, Subjects, Actions> = {
     can(
       Actions.manage,
       ActivityEntity,
-      ['activityTypeId', 'carbonEmission', 'description'],
+      ['activityCategoryId', 'carbonEmission', 'description'],
       { userId: user.id },
     );
   },

@@ -10,9 +10,8 @@ import {
   UsePipes,
   Query,
 } from '@nestjs/common';
-import { ActivityTypeService } from './activity-type.service';
-import { CreateActivityTypeDto } from './dto/create-activity-type.dto';
-import { UpdateActivityTypeDto } from './dto/update-activity-type.dto';
+import { ActivityCategoryService } from './activity-category.service';
+import { UpdateActivityCategoryDto } from './dto/update-activity-category.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -21,21 +20,22 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { ActivityTypeEntity } from './entities/activity-type.entity';
+import { ActivityCategoryEntity } from './entities/activity-category.entity';
 import ApiBaseResponses from '@decorators/api-base-response.decorator';
 import ApiOkBaseResponse from '@decorators/api-ok-base-response.decorator';
 import { AccessGuard, Actions, UseAbility } from '@modules/casl';
 import Serialize from '@decorators/serialize.decorator';
 import { PrismaQueryBuilderPipe } from '@decorators/prismaQueryBuilder.decorator';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
+import { CreateActivityCategoryDto } from './dto/create-activity-category.dto';
 
 @ApiTags('Activity')
 @ApiBearerAuth()
-@ApiExtraModels(ActivityTypeEntity)
+@ApiExtraModels(ActivityCategoryEntity)
 @ApiBaseResponses()
-@Controller('activity-type')
-export class ActivityTypeController {
-  constructor(private readonly activityTypeService: ActivityTypeService) {}
+@Controller('activity-category')
+export class ActivityCategoryController {
+  constructor(private readonly activityTypeService: ActivityCategoryService) {}
 
   @Get()
   @ApiQuery({ name: 'where', required: false, type: 'string' })
@@ -43,50 +43,50 @@ export class ActivityTypeController {
   @ApiQuery({ name: 'limit', required: false, type: 'number' })
   @ApiQuery({ name: 'page', required: false, type: 'number' })
   @ApiQuery({ name: 'fields', required: false, type: 'string' })
-  @ApiOkBaseResponse({ dto: ActivityTypeEntity, isArray: true })
+  @ApiOkBaseResponse({ dto: ActivityCategoryEntity, isArray: true })
   @UseGuards(AccessGuard)
-  @Serialize(ActivityTypeEntity)
-  @UseAbility(Actions.read, ActivityTypeEntity)
+  @Serialize(ActivityCategoryEntity)
+  @UseAbility(Actions.read, ActivityCategoryEntity)
   @UsePipes(PrismaQueryBuilderPipe)
   async findAll(
     @Query() query: any,
-  ): Promise<PaginatorTypes.PaginatedResult<ActivityTypeEntity>> {
+  ): Promise<PaginatorTypes.PaginatedResult<ActivityCategoryEntity>> {
     const { where, orderBy } = query;
     return this.activityTypeService.findAll(where, orderBy);
   }
 
-  @ApiBody({ type: CreateActivityTypeDto })
-  @Serialize(ActivityTypeEntity)
-  @UseAbility(Actions.create, ActivityTypeEntity)
+  @ApiBody({ type: CreateActivityCategoryDto })
+  @Serialize(ActivityCategoryEntity)
+  @UseAbility(Actions.create, ActivityCategoryEntity)
   @Post()
-  create(@Body() CreateActivityTypeDto: CreateActivityTypeDto) {
+  create(@Body() CreateActivityTypeDto: CreateActivityCategoryDto) {
     return this.activityTypeService.create(CreateActivityTypeDto);
   }
 
   @ApiParam({ name: 'id', required: true, type: 'string' })
-  @Serialize(ActivityTypeEntity)
-  @UseAbility(Actions.read, ActivityTypeEntity)
+  @Serialize(ActivityCategoryEntity)
+  @UseAbility(Actions.read, ActivityCategoryEntity)
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.activityTypeService.findById(id);
   }
 
   @ApiParam({ name: 'id', required: true, type: 'string' })
-  @ApiBody({ type: UpdateActivityTypeDto })
-  @Serialize(ActivityTypeEntity)
-  @UseAbility(Actions.update, ActivityTypeEntity)
+  @ApiBody({ type: UpdateActivityCategoryDto })
+  @Serialize(ActivityCategoryEntity)
+  @UseAbility(Actions.update, ActivityCategoryEntity)
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() UpdateActivityTypeDto: UpdateActivityTypeDto,
+    @Body() UpdateActivityTypeDto: UpdateActivityCategoryDto,
   ) {
     return this.activityTypeService.update(id, UpdateActivityTypeDto);
   }
 
   @ApiParam({ name: 'id', required: true, type: 'string' })
-  @ApiBody({ type: UpdateActivityTypeDto })
-  @Serialize(ActivityTypeEntity)
-  @UseAbility(Actions.delete, ActivityTypeEntity)
+  @ApiBody({ type: UpdateActivityCategoryDto })
+  @Serialize(ActivityCategoryEntity)
+  @UseAbility(Actions.delete, ActivityCategoryEntity)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.activityTypeService.remove(id);

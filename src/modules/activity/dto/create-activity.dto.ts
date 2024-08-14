@@ -19,5 +19,5 @@ export class CreateActivityDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
-  readonly activityTypeId!: string;
+  readonly activityCategoryId!: string;
 }

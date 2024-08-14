@@ -41,10 +41,9 @@ enum Roles {
   customer
 }
 
-model ActivityType {
+model ActivityCategory {
   id              String    @id @default(cuid()) @db.Char(25)
   name            String    @db.VarChar(50)
-  carbonFactor    Float     // Coefficient to calculate carbon emission
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
@@ -55,15 +54,16 @@ model ActivityType {
 model Activity {
   id             String   @id @default(cuid()) @db.Char(25)
   description    String?  @db.Text()
+  tag            String?  @db.Text()
   carbonEmission Float    // This can be calculated based on the type and specific details
   userId         String   @db.Char(25)
-  activityTypeId String   @db.Char(25)
+  activityCategoryId String   @db.Char(25)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   deletedAt      DateTime?
 
   user           User         @relation(fields: [userId], references: [id])
-  activityType   ActivityType @relation(fields: [activityTypeId], references: [id])
+  activityCategory   ActivityCategory @relation(fields: [activityCategoryId], references: [id])
 }
 
 model Challenge {

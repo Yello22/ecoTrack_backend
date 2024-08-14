@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { ActivityRepository } from './activity.repository';
 import { Activity, Prisma } from '@prisma/client';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
-import { ACTIVITY_NOT_FOUND } from '@constants/errors.constants';
 
 @Injectable()
 export class ActivityService {
@@ -15,7 +14,7 @@ export class ActivityService {
   }
 
   create(createActivityDto: CreateActivityDto) {
-    const { userId, activityTypeId, ...rest } = createActivityDto;
+    const { userId, activityCategoryId, ...rest } = createActivityDto;
     return this.activityRepository.create({
       ...rest,
       user: {
@@ -23,9 +22,9 @@ export class ActivityService {
           id: userId,
         },
       },
-      activityType: {
+      activityCategory: {
         connect: {
-          id: activityTypeId,
+          id: activityCategoryId,
         },
       },
     });
@@ -45,13 +44,13 @@ export class ActivityService {
   }
 
   async update(id: string, data: UpdateActivityDto): Promise<Activity> {
-    const { activityTypeId, ...rest } = data;
+    const { activityCategoryId, ...rest } = data;
     const updatedData: Prisma.ActivityUpdateInput = { ...rest };
 
-    if (activityTypeId) {
-      updatedData.activityType = {
+    if (activityCategoryId) {
+      updatedData.activityCategory = {
         connect: {
-          id: activityTypeId,
+          id: activityCategoryId,
         },
       };
     }

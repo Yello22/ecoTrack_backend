@@ -1,6 +1,10 @@
 import { Activity } from '@prisma/client';
 
 export class ActivityEntity implements Activity {
+  readonly tag: string;
+
+  readonly activityCategoryId: string;
+
   readonly id: string;
 
   readonly description!: string | null;
@@ -8,8 +12,6 @@ export class ActivityEntity implements Activity {
   readonly carbonEmission: number;
 
   readonly userId: string;
-
-  readonly activityTypeId: string;
 
   readonly createdAt!: Date;
 

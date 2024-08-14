@@ -1,11 +1,9 @@
-import { ActivityType } from '@prisma/client';
+import { ActivityCategory } from '@prisma/client';
 
-export class ActivityTypeEntity implements ActivityType {
+export class ActivityCategoryEntity implements ActivityCategory {
   readonly id: string;
 
   readonly name: string;
-
-  readonly carbonFactor: number;
 
   readonly createdAt: Date;
 

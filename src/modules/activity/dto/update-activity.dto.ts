@@ -11,5 +11,5 @@ export class UpdateActivityDto extends PartialType(CreateActivityDto) {
   readonly carbonEmission!: number;
 
   @IsString()
-  readonly activityTypeId!: string;
+  readonly activityCategoryId!: string;
 }
