@@ -4,6 +4,10 @@ import { Roles } from '@modules/app/app.roles';
 export default class UserEntity implements User {
   readonly id: string;
 
+  readonly tutorialsId: string;
+
+  readonly deletedAt: Date;
+
   readonly phone!: string | null;
 
   readonly email!: string;

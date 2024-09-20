@@ -37,7 +37,7 @@ export class AuthService {
       // 409001: User with this email or phone already exists
       throw new ConflictException(USER_CONFLICT);
     }
-    return this.userRepository.create(signUpDto);
+    return this.userRepository.create(signUpDto as User);
   }
 
   /**

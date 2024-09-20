@@ -14,8 +14,8 @@ function parseLogLevel(level: string | undefined): string[] {
 }
 
 export default registerAs('app', () => ({
-  port: process.env.APP_PORT || 3000,
-  baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+  port: process.env.APP_PORT || 3001,
+  baseUrl: process.env.BASE_URL || 'http://localhost:3001',
   loggerLevel: parseLogLevel(
     process.env.APP_LOGGER_LEVEL || 'log,error,warn,debug,verbose',
   ),

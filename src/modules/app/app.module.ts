@@ -15,8 +15,8 @@ import { AuthGuard } from '@modules/auth/auth.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TokenService } from '@modules/auth/token.service';
 import { TokenRepository } from '@modules/auth/token.repository';
-import { ActivityModule } from '@modules/activity/activity.module';
-import { ActivityCategoryModule } from '@modules/activity-category/activity-category.module';
+import { SimulationModule } from '@modules/simulation/simulation.module';
+import { TutorialModule } from '@modules/tutorial/tutorial.module';
 
 @Module({
   controllers: [],
@@ -38,8 +38,8 @@ import { ActivityCategoryModule } from '@modules/activity-category/activity-cate
       // Role to grant full access, optional
       superuserRole: Roles.admin,
     }),
-    ActivityCategoryModule,
-    ActivityModule,
+    TutorialModule,
+    SimulationModule,
     HealthModule,
     UserModule,
     AuthModule,
