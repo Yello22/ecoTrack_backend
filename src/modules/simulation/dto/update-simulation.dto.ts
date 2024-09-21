@@ -67,20 +67,10 @@ export class UpdateSimulationDto {
   readonly userId?: string;
 
   @ApiProperty({
-    type: Date,
+    type: String,
     description: 'Date of the simulation',
     required: false,
   })
-  @IsDate()
   @IsOptional()
-  readonly date?: Date;
-
-  @ApiProperty({
-    type: Date,
-    description: 'Deleted at timestamp',
-    required: false,
-  })
-  @IsDate()
-  @IsOptional()
-  readonly deletedAt?: Date;
+  readonly date?: string;
 }

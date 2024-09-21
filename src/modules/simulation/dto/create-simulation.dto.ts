@@ -3,7 +3,6 @@ import {
   IsString,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsArray,
   IsObject,
   IsDate,
@@ -52,17 +51,7 @@ export class CreateSimulationDto {
   @IsNotEmpty()
   readonly computedResults: object;
 
-  @ApiProperty({ type: Date, description: 'Date of the simulation' })
-  @IsDate()
+  @ApiProperty({ type: String, description: 'Date of the simulation' })
   @IsNotEmpty()
-  readonly date!: Date;
-
-  @ApiProperty({
-    type: Date,
-    description: 'Deleted at timestamp',
-    required: false,
-  })
-  @IsDate()
-  @IsOptional()
-  readonly deletedAt?: Date;
+  readonly date!: string;
 }

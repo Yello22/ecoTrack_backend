@@ -43,17 +43,16 @@ export class SimulationEntity implements Simulation {
   userId: string;
 
   @ApiProperty({
-    type: String,
-    description: 'ID of the computed results associated with the simulation',
-    required: false,
+    type: Date,
+    description: 'Date when the simulation was created',
   })
-  computedResultsId: string;
+  date: Date;
 
   @ApiProperty({
     type: Date,
     description: 'Date when the simulation was created',
   })
-  date: Date;
+  createdAt: Date;
 
   @ApiProperty({
     type: Date,

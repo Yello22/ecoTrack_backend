@@ -1,4 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsDate,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTutorialDto {
@@ -17,6 +23,11 @@ export class CreateTutorialDto {
   @IsBoolean()
   @IsNotEmpty()
   readonly scoreExplanation!: boolean;
+
+  @ApiProperty({ description: 'User ID associated with the tutorial' })
+  @IsString()
+  @IsNotEmpty()
+  readonly userId: string;
 
   @ApiProperty({
     type: Date,

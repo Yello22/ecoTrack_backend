@@ -1,0 +1,142 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: never
+    - when: always
+
+stages:
+  - prepare
+  - test
+  - build
+  - deploy
+
+variables:
+  DEV_SERVER_HOST: 44.201.208.105
+  IMAGE_TAG: "1.2"
+  IMAGE_NAME: $CI_REGISTRY_IMAGE
+  NODE_ENV: development
+  DEV_ENDPOINT: http://ec2-44-201-208-105.compute-1.amazonaws.com:4000
+
+#Common to have a job, which just builds the cache
+# Will only upload a cache, but never download
+#Pull-push (Cache policies): Jobs download the cache when the job start & uploads changes to the cache when the job ends
+#Need to configure docker volume in config.toml 
+build_cache:
+  stage: prepare
+  tags:
+    - ec2
+    - shell
+    - amazon-linux
+  script:
+    - echo "build cache"
+  cache:
+    key: "$CI_COMMIT_REF_NAME" #Use branch name as the cache key
+    paths: 
+      - ./node_modules
+    policy: push
+
+
+run_unit_test:
+  stage: test
+  cache:
+    key: "$CI_COMMIT_REF_NAME" #Use branch name as the cache key
+    paths: 
+      - ./node_modules
+    policy: pull 
+  tags:
+    - ec2
+    - docker
+    - nodejsv18.19.0
+  before_script:
+    - npm install
+  script:
+    - npm run test
+  artifacts:
+    when: always
+    paths:
+      - ./junit.xml
+    reports:
+      junit: ./junit.xml
+
+run_lint_test:
+  stage: test
+  dependencies: 
+    - run_unit_test
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - ./node_modules
+    policy: pull-push
+  tags:
+    - ec2
+    - docker
+    - nodejsv18.19.0
+  before_script:
+    - npm install
+  script:
+    - npm run lint
+
+build_image:
+  stage: build
+  tags:
+    - ec2
+    - docker
+    - dind
+  before_script:
+    - apk add --no-cache jq
+    - export PACKAGE_JSON_VERSION=$(cat ./package.json | jq -r .version)
+    - export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID #Version in package.json + ID du build 
+    - echo $VERSION > version-file.txt
+    - echo "$BUILD_DOCKER_ENV" > .env
+  script: 
+    - docker build --build-arg NODE_ENV=$NODE_ENV -t $CI_REGISTRY_IMAGE:$VERSION .
+  artifacts:
+    paths:
+      - version-file.txt
+      - .env
+
+push_image:
+  stage: build
+  needs: # Push image needs to wait with execution until build_image completed
+    - build_image
+  dependencies: # Tells gitlabs push_image needs artifact from build_image job
+    - build_image
+    #NOTE: The artifact is automatically distributed across Jobs but not at the same stage. This is why it is necessary to use "dependencies" in the stages to be able to recover the artifacts
+  #dependencies: [] Prevent artifact download
+  tags:
+    - ec2
+    - docker
+    - dind
+  before_script:
+    - export VERSION=$(cat ./version-file.txt) 
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY 
+  script:
+    - docker push $CI_REGISTRY_IMAGE:$VERSION
+
+deploy_to_dev:
+  stage: deploy
+  tags:
+    - ec2
+    - shell
+    - amazon-linux
+  before_script:
+    - export VERSION=$(cat ./version-file.txt) 
+    - chmod 400 $SSH_PRIVATE_KEY
+  script:
+    - scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ./docker-compose.yaml ec2-user@$DEV_SERVER_HOST:/home/ec2-user/
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ec2-user@$DEV_SERVER_HOST "
+      
+      export DC_IMAGE_NAME=$IMAGE_NAME &&
+      export DC_IMAGE_TAG=$VERSION &&
+      export MYSQL_ROOT_USER=root &&
+      export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
+      export MYSQL_DATABASE=authdbtest &&
+
+      docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY && 
+      docker-compose down &&
+      docker-compose up -d "
+
+  environment:
+    name: development
+    url: $DEV_ENDPOINT
+      

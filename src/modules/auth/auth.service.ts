@@ -68,7 +68,7 @@ export class AuthService {
     if (
       !(await this.tokenService.isPasswordCorrect(
         signInDto.password,
-        testUser.password, 
+        testUser.password,
       ))
     ) {
       // 401001: Invalid credentials

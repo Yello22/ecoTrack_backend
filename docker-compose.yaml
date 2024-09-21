@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  node-app:
+    build: .
+    image: ecotrack-backend:v1
+    environment:
+      - PORT=3001
+    ports:
+      - '3001:3001'
+    depends_on:
+      - postgresql-db
+    command: sh -c "npm run db:migrate && npm run start:dev"
+  
+  postgresql-db:
+    image: postgres:12.20-alpine3.20
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: ecotrack
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '5432:5432'
+
+volumes:
+  pg-data:
