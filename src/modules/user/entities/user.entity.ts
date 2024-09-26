@@ -2,6 +2,8 @@ import { User } from '@prisma/client';
 import { Roles } from '@modules/app/app.roles';
 
 export default class UserEntity implements User {
+  readonly state: string;
+
   readonly id: string;
 
   readonly tutorialsId: string;

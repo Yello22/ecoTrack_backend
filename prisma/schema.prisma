@@ -23,6 +23,7 @@ model User {
   tutorials   Tutorials?   @relation(fields: [tutorialsId], references: [id])
   simulations Simulation[]
   tutorialsId String?      @unique
+  state      String?      @db.VarChar(100)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

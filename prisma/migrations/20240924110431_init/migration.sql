@@ -11,9 +11,10 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "roles" "Roles"[] DEFAULT ARRAY['customer']::"Roles"[],
     "tutorialsId" TEXT,
+    "region" VARCHAR(100),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -27,7 +28,7 @@ CREATE TABLE "TokenWhiteList" (
     "refreshTokenId" TEXT,
     "expiredAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TokenWhiteList_pkey" PRIMARY KEY ("id")
 );
@@ -40,6 +41,7 @@ CREATE TABLE "Tutorials" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "Tutorials_pkey" PRIMARY KEY ("id")
 );
@@ -54,6 +56,7 @@ CREATE TABLE "Simulation" (
     "progression" DOUBLE PRECISION NOT NULL,
     "userId" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
 
@@ -66,14 +69,8 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "User_tutorialsId_key" ON "User"("tutorialsId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "TokenWhiteList_userId_key" ON "TokenWhiteList"("userId");
-
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_tutorialsId_fkey" FOREIGN KEY ("tutorialsId") REFERENCES "Tutorials"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TokenWhiteList" ADD CONSTRAINT "TokenWhiteList_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Simulation" ADD CONSTRAINT "Simulation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

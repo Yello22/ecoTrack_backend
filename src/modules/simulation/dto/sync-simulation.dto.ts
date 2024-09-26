@@ -1,4 +1,3 @@
-// UpdateSimulationDto.ts
 import {
   IsString,
   IsOptional,
@@ -9,7 +8,14 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateSimulationDto {
+export class SyncSimulationDto {
+  @ApiProperty({
+    type: String,
+    description: 'The situation ID',
+    required: false,
+  })
+  readonly id?: string;
+
   @ApiProperty({
     type: Object,
     description: 'The situation details as JSON object',
@@ -17,7 +23,7 @@ export class UpdateSimulationDto {
   })
   @IsObject()
   @IsOptional()
-  readonly situation?: Record<string, any>;
+  readonly situation: Record<string, any>;
 
   @ApiProperty({
     type: [String],
@@ -36,7 +42,7 @@ export class UpdateSimulationDto {
   })
   @IsObject()
   @IsOptional()
-  readonly actionChoices?: Record<string, any>;
+  readonly actionChoices: Record<string, any>;
 
   @ApiProperty({
     type: Object,
@@ -45,7 +51,7 @@ export class UpdateSimulationDto {
   })
   @IsObject()
   @IsOptional()
-  readonly computedResults?: Record<string, any>;
+  readonly computedResults: Record<string, any>;
 
   @ApiProperty({
     type: Number,
@@ -54,7 +60,7 @@ export class UpdateSimulationDto {
   })
   @IsNumber()
   @IsOptional()
-  readonly progression?: number;
+  readonly progression: number;
 
   @ApiProperty({
     type: String,
@@ -63,7 +69,7 @@ export class UpdateSimulationDto {
   })
   @IsUUID()
   @IsOptional()
-  readonly userId?: string;
+  readonly userId: string;
 
   @ApiProperty({
     type: String,
@@ -71,5 +77,21 @@ export class UpdateSimulationDto {
     required: false,
   })
   @IsOptional()
-  readonly date?: string;
+  readonly date: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'Create date of the simulation',
+    required: false,
+  })
+  @IsOptional()
+  readonly createdAt: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'Update Date of the simulation',
+    required: false,
+  })
+  @IsOptional()
+  readonly updatedAt?: string;
 }

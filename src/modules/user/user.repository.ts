@@ -63,4 +63,17 @@ export class UserRepository {
       orderBy,
     });
   }
+
+  /**
+   * @desc Update User
+   * @param id: string
+   * @param data Prisma.UserUpdateInput
+   * @returns Promise<User>
+   */
+  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
 }

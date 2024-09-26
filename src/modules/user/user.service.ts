@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@modules/user/user.repository';
 import { Prisma, User } from '@prisma/client';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
+import { UpdateUserDto } from './entities/user-update.dto';
 
 @Injectable()
 export class UserService {
@@ -32,5 +33,9 @@ export class UserService {
     orderBy: Prisma.UserOrderByWithRelationInput,
   ): Promise<PaginatorTypes.PaginatedResult<User>> {
     return this.userRepository.findAll(where, orderBy);
+  }
+
+  async update(id: string, data: UpdateUserDto): Promise<User> {
+    return this.userRepository.update(id, data);
   }
 }

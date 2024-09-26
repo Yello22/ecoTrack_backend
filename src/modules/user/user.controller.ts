@@ -1,4 +1,13 @@
-import { Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiBearerAuth,
@@ -11,10 +20,8 @@ import {
   AccessGuard,
   Actions,
   CaslConditions,
-  CaslSubject,
   CaslUser,
   ConditionsProxy,
-  SubjectProxy,
   UseAbility,
   UserProxy,
 } from '@modules/casl';
@@ -26,6 +33,7 @@ import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
 import UserBaseEntity from '@modules/user/entities/user-base.entity';
 import { UserHook } from '@modules/user/user.hook';
 import ApiOkBaseResponse from '@decorators/api-ok-base-response.decorator';
+import { UpdateUserDto } from '@modules/user/entities/user-update.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -66,20 +74,15 @@ export class UserController {
 
   @Patch('me')
   @UseGuards(AccessGuard)
-  @Serialize(UserBaseEntity)
-  @UseAbility(Actions.update, UserEntity, UserHook)
+  @UseAbility(Actions.update, UserEntity)
   async updateUser(
-    @CaslUser() userProxy?: UserProxy<User>,
-    @CaslConditions() conditions?: ConditionsProxy,
-    @CaslSubject() subjectProxy?: SubjectProxy<User>,
+    @Req() req: any,
+    @Body() body: UpdateUserDto,
   ): Promise<User> {
-    const tokenUser = await userProxy.get();
-    const subject = await subjectProxy.get();
-
-    console.log(tokenUser);
-    console.log(subject);
-    console.log(conditions.toMongo());
-
-    return subject;
+    const filteredBody = Object.fromEntries(
+      Object.entries(body).filter(([_, value]) => value !== undefined),
+    );
+    const { user } = req;
+    return this.userService.update(user.id, filteredBody);
   }
 }

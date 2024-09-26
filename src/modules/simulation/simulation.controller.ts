@@ -9,6 +9,7 @@ import {
   UseGuards,
   Query,
   UsePipes,
+  Request,
 } from '@nestjs/common';
 import { SimulationService } from './simulation.service';
 import { CreateSimulationDto } from './dto/create-simulation.dto';
@@ -29,6 +30,7 @@ import Serialize from '@decorators/serialize.decorator';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
 import { PrismaQueryBuilderPipe } from '@decorators/prismaQueryBuilder.decorator';
 import { Simulation } from '@prisma/client';
+import { SyncSimulationDto } from './dto/sync-simulation.dto';
 
 @ApiTags('Simulations')
 @ApiBearerAuth()
@@ -54,6 +56,18 @@ export class SimulationController {
   ): Promise<PaginatorTypes.PaginatedResult<Simulation>> {
     const { where, orderBy } = query;
     return this.simulationService.findAll(where, orderBy);
+  }
+
+  @ApiBody({ type: Array<UpdateSimulationDto> })
+  @Serialize(SimulationEntity)
+  @UseAbility(Actions.manage, SimulationEntity)
+  @Post('sync')
+  sync(
+    @Body() syncSimulationDto: Array<SyncSimulationDto>,
+    @Request() request,
+  ) {
+    const { user } = request;
+    return this.simulationService.sync(syncSimulationDto, user.id);
   }
 
   @ApiBody({ type: CreateSimulationDto })

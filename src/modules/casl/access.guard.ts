@@ -19,6 +19,7 @@ export class AccessGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+
     const ability = this.reflector.get<AbilityMetadata | undefined>(
       CASL_META_ABILITY,
       context.getHandler(),
@@ -32,7 +33,6 @@ export class AccessGuard implements CanActivate {
     req.setSubjectHook(
       await subjectHookFactory(this.moduleRef, ability?.subjectHook),
     );
-
     return this.accessService.canActivateAbility(request, ability);
   }
 }
