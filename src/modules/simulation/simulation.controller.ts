@@ -29,8 +29,9 @@ import { AccessGuard, Actions, UseAbility } from '@modules/casl';
 import Serialize from '@decorators/serialize.decorator';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
 import { PrismaQueryBuilderPipe } from '@decorators/prismaQueryBuilder.decorator';
-import { Simulation } from '@prisma/client';
+import { Simulation, User } from '@prisma/client';
 import { SyncSimulationDto } from './dto/sync-simulation.dto';
+import { UserService } from '@modules/user/user.service';
 
 @ApiTags('Simulations')
 @ApiBearerAuth()
@@ -38,7 +39,10 @@ import { SyncSimulationDto } from './dto/sync-simulation.dto';
 @ApiBaseResponses()
 @Controller('simulations')
 export class SimulationController {
-  constructor(private readonly simulationService: SimulationService) {}
+  constructor(
+    private readonly simulationService: SimulationService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get()
   @ApiQuery({ name: 'where', required: false, type: 'string' })
@@ -58,15 +62,27 @@ export class SimulationController {
     return this.simulationService.findAll(where, orderBy);
   }
 
+  @ApiParam({ name: 'id', required: true, type: 'string' })
+  @Serialize(SimulationEntity)
+  @UseAbility(Actions.read, SimulationEntity)
+  @Get('compareRegionalEmissions')
+  async compareRegionalEmissions(@Request() request) {
+    const user: User = await this.userService.findById(request.user?.id);
+    return this.simulationService.compareRegionalEmissions({
+      state: user.state,
+      userId: user.id,
+    });
+  }
+
   @ApiBody({ type: Array<UpdateSimulationDto> })
   @Serialize(SimulationEntity)
   @UseAbility(Actions.manage, SimulationEntity)
   @Post('sync')
-  sync(
+  async sync(
     @Body() syncSimulationDto: Array<SyncSimulationDto>,
     @Request() request,
   ) {
-    const { user } = request;
+    const user = await this.userService.findById(request.user?.id);
     return this.simulationService.sync(syncSimulationDto, user.id);
   }
 

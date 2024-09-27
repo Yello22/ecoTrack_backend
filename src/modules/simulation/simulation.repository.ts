@@ -17,7 +17,7 @@ export class SimulationRepository {
      */
     this.paginate = paginator({
       page: 1,
-      perPage: 10,
+      perPage: 100,
     });
   }
 
@@ -80,10 +80,12 @@ export class SimulationRepository {
   async findAll(
     where: Prisma.SimulationWhereInput,
     orderBy: Prisma.SimulationOrderByWithRelationInput,
+    include?: Prisma.SimulationInclude,
   ): Promise<PaginatorTypes.PaginatedResult<Simulation>> {
     return this.paginate(this.prisma.simulation, {
       where,
       orderBy,
+      include,
     });
   }
 

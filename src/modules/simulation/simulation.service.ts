@@ -25,6 +25,81 @@ export class SimulationService {
     return this.simulationRepository.create(data);
   }
 
+  async compareRegionalEmissions(data: {
+    state: string;
+    userId: string;
+  }): Promise<any> {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+
+    const simulations = await this.simulationRepository.findAll(
+      {
+        user: {
+          state: data.state,
+        },
+        date: {
+          gte: new Date(`${currentYear}-${currentMonth}-01`),
+          lt: new Date(`${currentYear}-${currentMonth + 1}-01`),
+        },
+      },
+      {
+        createdAt: 'desc',
+      },
+      {
+        user: true,
+      },
+    );
+
+    const groupedByUser = simulations.data.reduce((acc, simulation) => {
+      const userId = simulation.userId;
+
+      if (!acc[userId]) {
+        acc[userId] = [];
+      }
+
+      acc[userId].push(simulation);
+      return acc;
+    }, {});
+
+    const emissionsByUser = Object.keys(groupedByUser).map((userId) => {
+      const userSimulations = groupedByUser[userId];
+      const totalEmissions = userSimulations.reduce((sum: any, sim: any) => {
+        const results = sim.computedResults?.categories as any;
+        const emission =
+          (results?.transport || 0) + (results?.alimentation || 0);
+
+        return sum + emission;
+      }, 0);
+
+      const averageEmissions = totalEmissions / userSimulations.length;
+
+      return {
+        userId,
+        totalEmissions,
+        averageEmissions,
+        simulationsCount: userSimulations.length,
+      };
+    });
+
+    const me = emissionsByUser.find(
+      (emission) => emission.userId === data.userId,
+    );
+    const behindMe = emissionsByUser.filter(
+      (emission) => emission.averageEmissions > me.averageEmissions,
+    );
+
+    const beterAverageThanOther =
+      (behindMe.length * 100) / (emissionsByUser.length - 1);
+
+    return {
+      betterThan: Math.round(beterAverageThanOther),
+      description:
+        'Pas de descriptions pour le moment lorem ipsum patati patata',
+      whatNext: 'Tips: Pas de tips pour le moment lorem ipsum patati patata',
+      state: data.state,
+    };
+  }
+
   async sync(
     data: Array<SyncSimulationDto>,
     userId: string,

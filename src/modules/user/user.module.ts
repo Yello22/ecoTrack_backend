@@ -9,5 +9,6 @@ import { permissions } from '@modules/user/user.permissions';
   imports: [CaslModule.forFeature({ permissions })],
   controllers: [UserController],
   providers: [UserService, UserRepository],
+  exports: [UserService],
 })
 export class UserModule {}
